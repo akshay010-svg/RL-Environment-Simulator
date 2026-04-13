@@ -20,6 +20,37 @@ A production-ready, sandboxed **Reinforcement Learning (RL) environment** design
 
 ---
 
+## 🔍 How it Works
+
+The project simulates a B2B SaaS support desk where an AI agent acts as the "Queue Manager." The goal is to maximize efficiency by assigning and resolving tickets using a standard Reinforcement Learning (RL) loop.
+
+### 1. Environment Initialization (`/rl/reset`)
+When an agent starts a session, the engine:
+*   **Seeds the Scenario**: Generates a randomized number of support agents and open tickets with varying priorities (Low, Medium, High).
+*   **Initializes State**: Sets up a fresh PostgreSQL episode to track the agent's performance.
+*   **Returns Observation**: Provides a JSON snapshot of the available tickets, their status, and agent workloads.
+
+### 2. The Interaction Loop (`/rl/step`)
+The agent interacts with the environment in a discrete time-step fashion:
+1.  **Action**: The agent selects an action (e.g., `assign_ticket`, `resolve_ticket`, `create_task`).
+2.  **Transition**: The engine validates the action against business logic (e.g., can't resolve an unassigned ticket) and updates the database.
+3.  **Reward**: A numerical signal is calculated. High-priority resolution gives more reward, while invalid actions or excessive delays result in penalties.
+4.  **Next Observation**: The engine returns the updated state of the world.
+
+### 3. Termination Logic
+An episode ends (**Done**) when:
+*   ✅ **Success**: All tickets in the current batch are resolved.
+*   ⚠️ **Timeout**: The agent exceeds the maximum allowed steps (configurable).
+
+### 🏆 Reward System Highlights
+| Action | Reward |
+| :--- | :--- |
+| **Resolve Ticket** | `+15.0` (Plus `+5.0` bonus for High Priority) |
+| **Assign Ticket** | `+3.0` to `+10.0` (Based on priority) |
+| **Complete Task** | `+5.0` |
+| **Invalid Action** | `-1.0` |
+| **Time Penalty** | `-0.1` (Per step, to encourage speed) |
+
 ## 🏗️ Project Architecture
 
 ```plaintext

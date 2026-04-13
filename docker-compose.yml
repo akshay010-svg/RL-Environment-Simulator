@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=postgresql+asyncpg://neondb_owner:npg_4Gcqrx2UIHAs@ep-morning-rice-am1b475d.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require
-      - SECRET_KEY=dev-secret-key-change-in-production
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
     volumes:
       - ./app:/app/app # For live reloading during development (optional cmd change needed)
